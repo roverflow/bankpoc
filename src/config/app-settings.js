@@ -1,7 +1,7 @@
 import SBILogo from "@/assets/sbi-life.png";
 import HDFCLogo from "@/assets/hdfc-life.svg";
 import CamfilLogo from "@/assets/camfil-logo.svg";
-import Pix4dLogo from "@/assets/pix4d-logo.svg";
+import Pix4dLogo from "@/assets/pix4d.svg";
 
 export const APP_SETTINGS = {
   sbi: {
