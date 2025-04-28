@@ -98,7 +98,7 @@ async function sendToGoogleAI(filePath, mimeType) {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const result = await model.generateContent([
-    "Transcribe this audio clip. Do not give me anything else, just the transcription. even if the audio is not clear.",
+    "Transcribe this audio clip. Do not give me anything else, just the transcription, ignore static noises. even if the audio is not clear.",
     {
       fileData: {
         fileUri: uploadResult.file.uri,
