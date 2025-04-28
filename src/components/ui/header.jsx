@@ -10,9 +10,9 @@ function ChatHeader({ sessionId, startNewChat }) {
     <header className="flex sticky top-0 bg-background py-1.5 items-center justify-between px-2 md:px-2 gap-2 border-b">
       <div className="flex items-center gap-2">
         <Image src={bankInfo.logo} alt="SBI Life" height={50} />
-        <div className="text-lg flex flex-col font-bold text-black">
+        {/* <div className="text-lg flex flex-col font-bold text-black">
           <span>{bankInfo.title}</span>
-        </div>
+        </div> */}
       </div>
       <button
         onClick={startNewChat}
