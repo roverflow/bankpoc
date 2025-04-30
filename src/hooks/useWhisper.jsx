@@ -16,6 +16,7 @@ const useWhisper = (options = {}) => {
   const [transcription, setTranscription] = useState(null);
   const [transcriptionLoading, setTranscriptionLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [permissionStatus, setPermissionStatus] = useState(null); // Added to track permission status
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -60,12 +61,92 @@ const useWhisper = (options = {}) => {
     return true;
   };
 
+  // Function to check microphone permission status
+  const checkMicPermission = useCallback(async () => {
+    try {
+      // Check if Permission API is supported
+      if (navigator.permissions && navigator.permissions.query) {
+        const result = await navigator.permissions.query({
+          name: "microphone",
+        });
+        setPermissionStatus(result.state);
+
+        // Set up listener for permission changes
+        result.onchange = function () {
+          setPermissionStatus(this.state);
+        };
+
+        return result.state;
+      } else {
+        // Fallback for browsers that don't support Permission API
+        return "unknown";
+      }
+    } catch (error) {
+      console.error("Error checking microphone permission:", error);
+      return "unknown";
+    }
+  }, []);
+
+  // Request microphone permission explicitly
+  const requestMicPermission = useCallback(async () => {
+    try {
+      // Check browser support first
+      if (!checkAudioSupport()) return false;
+
+      setError(null);
+
+      // This will trigger the permission dialog if permission hasn't been granted yet
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Stop the stream immediately since we're just requesting permission
+      stream.getTracks().forEach((track) => track.stop());
+
+      // Update permission status
+      await checkMicPermission();
+
+      return true;
+    } catch (error) {
+      console.error("Permission request failed:", error);
+      setError(`Microphone permission denied: ${error.message}`);
+      await checkMicPermission();
+      return false;
+    }
+  }, [checkMicPermission]);
+
+  // Check permission on component mount
+  useEffect(() => {
+    checkMicPermission();
+  }, [checkMicPermission]);
+
   const startRecording = async () => {
     try {
       setError(null);
 
       // Check for browser support
       if (!checkAudioSupport()) return;
+
+      // Check microphone permission first
+      const permissionState = await checkMicPermission();
+
+      if (permissionState === "denied") {
+        setError(
+          "Microphone permission has been denied. Please enable it in your browser settings."
+        );
+        return;
+      }
+
+      // If permission is prompt or unknown, request permission explicitly
+      if (permissionState === "prompt" || permissionState === "unknown") {
+        const permissionGranted = await requestMicPermission();
+        if (!permissionGranted) {
+          // User denied permission or there was an error
+          return;
+        }
+
+        // Exit after gaining permission - subsequent calls will work
+        setError("Microphone permission granted. Please try recording again.");
+        return;
+      }
 
       // Reset state if any previous recordings exist
       cleanupMedia();
@@ -219,8 +300,10 @@ const useWhisper = (options = {}) => {
     transcriptionLoading,
     transcription,
     error,
+    permissionStatus,
     startRecording,
     stopRecording,
+    requestMicPermission,
     resetTranscription: () => setTranscription(null),
     resetError: () => setError(null),
   };
