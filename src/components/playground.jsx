@@ -150,6 +150,10 @@ export function Playground({ sessionId, startNewChat }) {
             <div className="flex items-center justify-center w-full">
               <LoadingDots className="w-12 h-12" />
             </div>
+          ) : isRecording ? (
+            <div className="flex-1 ring-0 focus:ring-0 text-rose-500">
+              recording...
+            </div>
           ) : (
             <Input
               autoFocus
