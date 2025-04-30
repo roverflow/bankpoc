@@ -2,6 +2,7 @@ import SBILogo from "@/assets/sbi-life.png";
 import HDFCLogo from "@/assets/hdfc-life.svg";
 import CamfilLogo from "@/assets/camfil-logo.svg";
 import Pix4dLogo from "@/assets/pix4d.svg";
+import ABCLife from "@/assets/abc-life.png";
 
 export const APP_SETTINGS = {
   sbi: {
@@ -23,5 +24,10 @@ export const APP_SETTINGS = {
     title: "Pix4D",
     primaryColor: "#2AD563",
     logo: Pix4dLogo,
+  },
+  abclife: {
+    title: "ABC Life",
+    primaryColor: "#0091EA",
+    logo: ABCLife,
   },
 };
